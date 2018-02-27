@@ -1,0 +1,23 @@
+   
+   
+  #  <%= @current_repo %>
+  #  <% if @repo_description %>
+  #       <%= @repo_description %>
+  #   <% else %>
+  #       <p> No description found for this repo </p>
+  #   <% end %>
+
+    <html>
+  <head>
+    <title>Force-Directed Layout</title>
+    <script type="text/javascript" src="../../assets/d3/d3.min.js"></script>
+    <script type="text/javascript" src="../../assets/d3/d3.geom.min.js"></script>
+    <script type="text/javascript" src="../../assets/d3/d3.layout.min.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="users.scss"/>
+  </head>
+  <body>
+    <div id="chart"></div>
+    <script type="text/javascript" src="users.coffee"></script>
+  </body>
+</html>

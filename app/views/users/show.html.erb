@@ -1,0 +1,12 @@
+<div class = "header-div">
+    <h3>Hi <%= current_user.username %></h3>
+</div>
+<div class = "content-div">
+    
+        <p>Your Git Repos are listed below: </p>
+    <div class = "list-div">
+        <% @repos.each.with_index(1) do |r,idx|%>
+            <ul><%="#{idx}) " %><%= link_to "#{r.name}", details_path(r) %></ul>
+        <% end %>
+    </div>
+</div>
