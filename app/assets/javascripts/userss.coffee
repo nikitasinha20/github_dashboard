@@ -2,6 +2,11 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://coffeescript.org/
 
+# alert = require 'alert-node'
+# alert 'Hello'
+
+# <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+# script src: "js/jquery-1.9.1.min.js", type: "text/javascript"
 todo = {}
 
 isEmpty = (obj) ->
@@ -85,18 +90,20 @@ finished = ->
       d.y
     return
   return
-
+# alert("Hi")
 username = 'nikita-sinha'
 repo = 'rent_my_music'
 base = 'https://api.github.com/repos/' + username + '/' + repo + '/commits'
 links = []
 done = false
 handle = undefined
+# console.log("Hi")
+# $(document).ready ->
 $.ajax
   url: @details
   dataType: 'json'
   async: false
   success: (json) ->
     todo[json[0].sha] = true
-    return
-handle = setInterval(doLayer, 200)
+    doLayer 
+# handle = setInterval(doLayer, 200)

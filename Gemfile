@@ -37,6 +37,7 @@ gem 'omniauth-github'
 gem 'mysql2'
 gem "github_api"
 gem "d3-rails"
+gem "jquery-rails"
 
 
 group :development, :test do

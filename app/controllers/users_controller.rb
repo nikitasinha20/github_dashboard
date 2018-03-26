@@ -7,14 +7,20 @@ class UsersController < ApplicationController
     end
 
     def show_repo_details
+    end
+
+    def data
         @current_repo = params[:name]
         @repo_description = params[:description]
-        @details = Github.repos.commits.all  "#{current_user.username}", "#{params[:name]}"
+        # github = Github.new login:"#{current_user.username}", password:"#{params[:name]}"
+        @details = Github.repos.commits.list  "#{current_user.username}","#{params[:name]}"
+        # @details = github.repos.commits.all  "#{current_user.username}", "#{@current_repo}"
         respond_to do |format|
             format.json {
               render :json => @details
             }
         end
     end
+
 
 end

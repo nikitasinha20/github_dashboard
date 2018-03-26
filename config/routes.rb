@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   root to: 'sessions#new'
 
   get '/users/:id', to: 'users#show', as: 'user'
-  get '/users/repo/details', to: 'users#show_repo_details', as: 'details', :defaults => { :format => 'json' }
-
+  get '/users/repo/details', to: 'users#show_repo_details', as: 'details'
+  get '/users/repo/data', to: 'users#data', :defaults => { :format => 'json' }
 
 end
