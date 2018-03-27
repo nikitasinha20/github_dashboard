@@ -217,15 +217,36 @@ var base = "https://api.github.com/repos/" + username + "/" + repo + "/commits"
 var links = []
 var done = false
 var handle
+// var xval = 100
+// var yval = 200
+// var nodes = []
 $.ajax(
 {
 	url : base, dataType : 'json', 
 	async : false, 
 	success : function(json) 
 	{ 
-		todo[json[0].sha] = true
+        console.log("json in ajax",json)
+        todo[json[0].sha] = true
+        // calculateNodesAndLinks(json)
 	}
 })
+
+// function calculateNodesAndLinks(json) {
+//     for(data in json){
+//         var value = json[data]
+//         var node = {};
+//         node.name = value.sha
+//         node.x = xval + 100;
+//         xval = node.x;
+//         node.y = yval;
+//         nodes.push(node);
+//         for (var i = 0; i < value.parents.length; i++){
+//             links.push({source: value.sha, target: value.parents[0].sha})
+//         }
+//     }
+//     done = true
+// }
 
 function isEmpty(obj) {
   for(var prop in obj) {
@@ -237,6 +258,7 @@ function isEmpty(obj) {
 }
 
 function discoverLinks(json){
+    console.log("json", json)
 	for (var i = 0; i < json.parents.length; i++) 
 	{
 		links.push({source: json.sha, target: json.parents[i].sha})
@@ -246,7 +268,8 @@ function discoverLinks(json){
 }
 
 function doLayer() {
-	done = true
+    done = true
+    console.log("todo",todo)
 	for (prop in todo) 
 	{
 		if (todo[prop])
@@ -267,6 +290,7 @@ function finished()
 {
 	var nodes = {};
 
+    console.log("links",links)
 	// Compute the distinct nodes from the links.
 	links.forEach(function(link) {
 	  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
@@ -278,11 +302,12 @@ function finished()
     console.log("nodes:",nodes)
 
 	var w = 900,
-	    h = 500,
+        h = 300,
+        r = 10,
 	    fill = d3.scaleOrdinal(d3.schemeCategory20);
 
 	var vis = d3.select("#chart")
-	//   .append("svg:svg")
+        // .append("svg:svg")
 	    .attr("width", w)
 	    .attr("height", h);
 
@@ -296,48 +321,94 @@ function finished()
       
       var force = d3.forceSimulation(nodes)
         .force("charge",d3.forceManyBody(-120))
-        .force("link", d3.forceLink(links))
+        .force("link", d3.forceLink(links).distance(200))
         .force("size",d3.forceX([w]))
         .force("size",d3.forceY([h]));
 
 	var link = vis.selectAll("line.link")
 	  .data(links)
       .enter()
-      .append("line")
+      .append("svg:line")
 	  .attr("class", "link")
       .style("stroke-width", function(d) { return Math.sqrt(d.value); })
     //   .style("stroke", "rgb(6,120,155)")
 	  .attr("x1", function(d) { return d.source.x; })
 	  .attr("y1", function(d) { return d.source.y; })
 	  .attr("x2", function(d) { return d.target.x; })
-	  .attr("y2", function(d) { return d.target.y; });
+      .attr("y2", function(d) { return d.target.y; });
+
+    // var drag = d3.behaviour.drag()
+    //     .on("dragstart", function(d) { return  d.fixed = true;});
 
 	var node = vis.selectAll("circle.node")
 	  .data(nodes)
       .enter()
-      .append("circle")
+      .append("svg:circle")
 	  .attr("class", "node")
 	  .attr("cx", function(d) { return d.x; })
 	  .attr("cy", function(d) { return d.y; })
-	  .attr("r", 10)
-	  .style("fill", function(d) { return fill(d.group); })
-	//   .call(force.drag);
+	  .attr("r", r)
+      .style("fill", function(d) { return fill(d.group); })
+    //   .call(drag)
+    //   .call(force.drag);
+    
+
+    nodes.forEach(function(d) {
+        if(d.index == 0) {
+          d.x = w/2, d.y = h/2;
+          d.fixed = true;
+        }
+     });
 
 	// node.append("svg:title")
-	//   .text(function(d) { return d.name; });
+    //   .text(function(d) { return d.name; });
+    // var nodeLabels = node.append("svg:text")
+    //     .text(function(d) { return d.name })
+    //     .attr({
+    //         "class": "node-label",
+    //         // 'dy': 24,
+    //         "text-anchor": "middle"
+    //     })
+        
+      
+    // node.attr("cx", function(d) { return d.x = Math.max(d.width, Math.min(width - d.width, d.x)); })
+    //     .attr("cy", function(d) { return d.y = Math.max(d.height, Math.min(height - heightDelta - d.height, d.y)); })
 
-	vis.style("opacity", 1e-6)
-	.transition()
-	  .duration(1000)
-	  .style("opacity", 1);
+	vis.style("opacity", 1)
+        .transition()
+        .duration(1000);
+        // .style("opacity", 1);
+
+    var texts = vis.selectAll("text.label")
+            .data(nodes)
+            .enter()
+            .append("text")
+            // .attr("class", "label")
+            // .attr("fill", "black")
+            .text(function(d) {  return d.name;  })
+            .style("text-anchor", "middle")
+            .style("fill", "#555")
+            .style("font-family", "Arial")
+            .style("font-size", 11)
+            .style("alignment-baseline", "text-bottom")
+            // .attr('y', '0.7em')
+
 
 	force.on("tick", function() {
-	link.attr("x1", function(d) { return d.source.x; })
-	    .attr("y1", function(d) { return d.source.y; })
-	    .attr("x2", function(d) { return d.target.x; })
-	    .attr("y2", function(d) { return d.target.y; });
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
 
-	node.attr("cx", function(d) { return d.x; })
-	    .attr("cy", function(d) { return d.y; });
-	});
+        node.attr("cx", function(d) { return d.x = Math.max(r, Math.min(w - r, d.x)); })
+            .attr("cy", function(d)  { return d.y = Math.max(r, Math.min(h - (2 * r) , d.y)); });
+        
+        // node.attr("transform", function(d) {
+        //     return "translate(" + Math.max(r, Math.min(w - r, d.x)) + "," + Math.max(r, Math.min(h - r, d.y)) + ")";
+        // });
+        texts.attr("transform", function(d) {
+            return "translate(" + d.x + "," + h + ")";
+        });
+    
+    });
 }
