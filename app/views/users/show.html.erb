@@ -6,7 +6,9 @@
         <p>Your Git Repos are listed below: </p>
     <div class = "list-div">
         <% @repos.each.with_index(1) do |r,idx|%>
-            <ul><%="#{idx}) " %><%= link_to "#{r.name}", details_path(r) %></ul>
+            <ul>
+                <%="#{idx}) " %><%= link_to "#{r.name}", details_path(name: r.name, description: r.description) %>
+            </ul>
         <% end %>
     </div>
 </div>

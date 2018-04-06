@@ -1,1 +1,23 @@
-<svg id="chart"></svg>
+<div class = "header-div">
+    <h3><%= @current_repo %> Details</h3>
+    <dd><p><%= @repo_description %></p></dd>
+</div>
+
+<div class = "content-div">
+  <%= form_tag "/users/repo/details", method: :get do %>
+    <%= label_tag "Date Range: "%>
+    <%= date_field_tag(:start_date, Date.today )%>
+    <%= date_field_tag(:end_date, Date.today, :max => Date.today) %>
+    <%= hidden_field_tag :name, @current_repo%>
+    <%= submit_tag 'Search' %>
+  <% end %>
+  <div>
+    <svg id="chart"></svg>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).on('turbolinks:load',function(event){
+    $("body").append( "<%=j render :partial => 'users', :locals => {:repo => @current_repo } %>" ).trigger('show');
+  });
+</script>
